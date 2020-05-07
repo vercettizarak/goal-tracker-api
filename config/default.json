@@ -1,0 +1,4 @@
+{
+  "mongoURI": "mongodb+srv://dbVercetti:dbpassword@goaltracker-mnmhs.mongodb.net/test?retryWrites=true&w=majority",
+  "jwtSecret": "Secret"
+}
