@@ -9,6 +9,7 @@ var DaySchema = mongoose.Schema({
     type: String,
     required: true,
   },
+  tasks: [mongoose.Schema.Types.Mixed],
   num: {
     type: Number,
     required: true,

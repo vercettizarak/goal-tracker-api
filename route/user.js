@@ -6,7 +6,7 @@ const jwt = require('jsonwebtoken');
 const auth = require('../middleware/auth');
 const config = require('config');
 
-// @route   POST api/users
+// @route   POST api/user
 // @desc    Register a user
 // @access  Public
 route.post('/', async (req, res) => {
@@ -14,13 +14,13 @@ route.post('/', async (req, res) => {
   const { name, email, password } = req.body;
 
   if (!name || !email || !password) {
-    res.status(400).json({ msg: 'Please include Valid information' });
+    res.status(400).send('Please include Valid information');
   }
 
   try {
     //Check if the user exist
     if ((await User.findOne({ email })) !== null) {
-      return res.json({ msg: 'User already exists' });
+      return res.send('User already exists');
     }
 
     //If doesn't Create User
@@ -45,14 +45,14 @@ route.post('/', async (req, res) => {
     });
 
     //send a token
-    res.json(token);
+    res.send(token);
   } catch (err) {
     console.error(err);
     res.status(500).send('Server Error');
   }
 });
 
-//@route  api/users
+//@route  api/user
 //desc    get user
 //access  Private
 route.get('/', auth, async (req, res) => {
@@ -61,6 +61,51 @@ route.get('/', auth, async (req, res) => {
     const user = await User.findById(req.user._id).select('-password');
 
     //send user
+    res.json(user);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server Error');
+  }
+});
+
+//@route  api/user/status
+//desc    get user status
+//access  Private
+route.get('/status', auth, async (req, res) => {
+  try {
+    //check and user from database
+    const user = await User.findById(req.user._id).select('-password');
+
+    //send user
+    res.json({ status: user.status });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server Error');
+  }
+});
+
+route.put('/', auth, async (req, res) => {
+  //Retrive data from the body
+  const { name, email, mission } = req.body;
+
+  //check if valid
+  if (!name || !email || !mission) {
+    res.status(400).send('Please include Valid information');
+  }
+  try {
+    //check if the user exist
+    const user = await await User.findById(req.user._id);
+
+    if (!user) return res.status(404).send('User not found');
+
+    //Change data
+    (user.name = name),
+      (user.email = email),
+      (user.mission = mission),
+      //save
+      user.save();
+
+    //send a response
     res.json(user);
   } catch (err) {
     console.error(err);

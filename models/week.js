@@ -9,6 +9,10 @@ const WeekSchema = mongoose.Schema({
     type: String,
     require: true,
   },
+  goals: {
+    finished: [],
+    unfinished: [],
+  },
   num: {
     type: Number,
     require: true,

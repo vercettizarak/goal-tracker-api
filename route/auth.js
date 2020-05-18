@@ -21,7 +21,6 @@ route.post('/', async (req, res) => {
     const user = await User.findOne({ email });
 
     if (!user) return res.status(400).send('User not found');
-
     //create a json web token and respond
     const payload = {
       user: {

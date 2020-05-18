@@ -5,28 +5,27 @@ const auth = require('../middleware/auth');
 const route = express.Router();
 const moment = require('moment');
 
-//@route    POST api/daily
+//@route    POST api/days
 //@desc     Post day data
 //@access   Private
 route.post('/', auth, async (req, res) => {
   //Check data
-  const { data, num } = req.body;
+  const { data, tasks } = req.body;
   if (!data) {
-    res.status(400).json('Please add valid data');
+    res.status(400).send('Please add valid data');
   }
   try {
-    //create and save day
-    const day = new Day({ user: req.user._id, data, num: user.status.day + 1 });
-
-    /*To solve when the app is complete
     //get day from user
     const user = await User.findById(req.user._id);
-    //check if it is same day
-    const lastDay = await Day.find().sort({ date: -1 }).limit(1);
-    const toDay = moment(day.date);
-    const yest = moment(lastDay.date);
-    //if (sameDay) return res.status(400).send('Day already posted');
-    */
+
+    //create and save day
+    const day = new Day({
+      user: req.user._id,
+      data,
+      tasks,
+      num: user.status.day + 1,
+    });
+
     //Save day
     await day.save();
 
@@ -35,10 +34,28 @@ route.post('/', auth, async (req, res) => {
     await user.save();
 
     //Send a response
-    res.json({ msg: 'Day saved' });
+    res.send(`Day ${user.status.day} saved`);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ msg: 'Server Error' });
+    res.status(500).send('Server Error');
+  }
+});
+
+//@route    GET api/days
+//@desc     Get days data
+//@access   Private
+route.get('/', auth, async (req, res) => {
+  try {
+    //Check if there is day
+    const days = await Day.find({ user: req.user._id });
+
+    if (!days) return res.status(404).send('Day not found');
+
+    //send Day
+    res.send(days);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server Error');
   }
 });
 
@@ -48,12 +65,12 @@ route.post('/', auth, async (req, res) => {
 route.get('/:num', auth, async (req, res) => {
   try {
     //Check if there is day
-    const day = await Day.findOne({ num: req.params.num, user: req.user._id });
+    const day = await Day.findOne({ user: req.user._id, num: req.params.num });
 
-    if (!day) return res.status(404).json({ msg: 'Day not found' });
+    if (!day) return res.status(404).send('Day not found');
 
     //send Day
-    res.json(day);
+    res.send(day);
   } catch (err) {
     console.error(err);
     res.status(500).send('Server Error');

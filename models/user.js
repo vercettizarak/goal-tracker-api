@@ -16,11 +16,26 @@ const UserSchema = mongoose.Schema({
   },
   mission: String,
   status: {
-    day: Number,
-    week: Number,
-    month: Number,
-    quarter: Number,
-    year: Number,
+    day: {
+      type: Number,
+      default: 0,
+    },
+    week: {
+      type: Number,
+      default: 0,
+    },
+    month: {
+      type: Number,
+      default: 0,
+    },
+    quarter: {
+      type: Number,
+      default: 0,
+    },
+    year: {
+      type: Number,
+      default: 0,
+    },
   },
   date: {
     type: Date,
